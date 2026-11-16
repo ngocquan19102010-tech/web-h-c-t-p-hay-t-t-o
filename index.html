@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>StudySmart - Trợ Lý Ôn Tập Câu Hỏi & Đề Cương (Online & Offline)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        /* Hiệu ứng lật thẻ 3D mượt mà trên iOS/Android/Desktop */
+        .perspective-1000 {
+            perspective: 1000px;
+            -webkit-perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+        }
+        /* Thanh cuộn tinh gọn */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        /* Chống tự phóng to màn hình khi chạm input trên iOS */
+        @media screen and (max-width: 768px) {
+            textarea, input {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+    <!-- ================= HEADER (TỐI ƯU MOBILE & DESKTOP) ================= -->
+    <header class="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
+            <!-- Thương hiệu -->
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="font-extrabold text-base sm:text-xl tracking-tight text-slate-900 dark:text-white truncate">StudySmart</h1>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">Hybrid</span>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">Nạp câu hỏi Offline & Tạo đề Online AI</p>
+                </div>
+            </div>
+
+            <!-- Nút chức năng bên phải -->
+            <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+                <!-- Trạng thái mạng -->
+                <div id="networkBadge" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800">
+                    <span id="networkDot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="networkLabel">Online</span>
+                </div>
+
+                <!-- Nút Tải App Offline thành 1 file HTML độc lập -->
+                <button type="button" onclick="downloadOfflineApp()" title="Tải ứng dụng về máy thành 1 file HTML để dùng Offline mọi lúc" class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 sm:py-2 rounded-xl bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80 text-xs font-semibold transition">
+                    <i data-lucide="download" class="w-4 h-4 flex-shrink-0"></i>
+                    <span class="hidden sm:inline">Tải App Offline</span>
+                </button>
+
+                <!-- Nút Sáng / Tối -->
+                <button type="button" onclick="toggleTheme()" aria-label="Chuyển đổi giao diện Sáng/Tối" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700 transition">
+                    <i id="themeIconSun" data-lucide="sun" class="w-4 h-4 hidden"></i>
+                    <i id="themeIconMoon" data-lucide="moon" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= THÔNG BÁO TOAST (KHÔNG DÙNG ALERT) ================= -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 sm:max-w-sm pointer-events-none"></div>
+
+    <!-- ================= NỘI DUNG CHÍNH ================= -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 sm:py-7">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- ================= CỘT TRÁI: NHẬP DỮ LIỆU & CHỌN CHẾ ĐỘ (5 CỘT) ================= -->
+            <section class="lg:col-span-5 flex flex-col gap-4">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-5">
+
+                    <!-- Tiêu đề & Nút chèn mẫu -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+                        <h2 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="file-spreadsheet" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
+                            <span>Câu hỏi / Đề cương</span>
+                        </h2>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="loadOfflineSampleData()" class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 dark:text-indigo-300 dark:border-indigo-800/70 transition">
+                                <i data-lucide="list-plus" class="w-3.5 h-3.5"></i>
+                                <span>Mẫu Câu Hỏi Offline</span>
+                            </button>
+                            <button type="button" onclick="loadOutlineSampleData()" class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 dark:text-amber-300 dark:border-amber-800/70 transition">
+                                <i data-lucide="book-open-check" class="w-3.5 h-3.5"></i>
+                                <span>Mẫu Đề Cương</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hướng dẫn định dạng nhanh cho Offline -->
+                    <details class="mb-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 px-3 py-2 text-xs">
+                        <summary class="cursor-pointer font-semibold text-slate-600 dark:text-slate-300 flex items-center justify-between select-none">
+                            <span class="flex items-center gap-1.5">
+                                <i data-lucide="help-circle" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <span>Xem định dạng chuẩn cho chế độ Offline</span>
+                            </span>
+                            <span class="text-[11px] text-blue-600 dark:text-blue-400">Chi tiết</span>
+                        </summary>
+                        <div class="mt-2 pt-2 border-t border-slate-200/70 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-1.5 leading-relaxed">
+                            <p><strong class="text-slate-700 dark:text-slate-200">1. Trắc nghiệm sẵn có:</strong><br>
+                            <code class="text-blue-600 dark:text-blue-400">Câu 1: Thủ đô Việt Nam là gì? A. Huế  *B. Hà Nội  C. Đà Nẵng  D. Cần Thơ</code> (hoặc ghi dòng <code class="text-blue-600 dark:text-blue-400">Đáp án: B</code> bên dưới; chưa có đáp án vẫn luyện tập được).</p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">2. Cặp Hỏi – Đáp / Flashcards:</strong><br>
+                            <code class="text-blue-600 dark:text-blue-400">Hỏi: Quang hợp là gì?</code> xuống dòng <code class="text-blue-600 dark:text-blue-400">Đáp: Quá trình tổng hợp chất hữu cơ...</code></p>
+                            <p><strong class="text-slate-700 dark:text-slate-200">3. Đề cương văn bản thuần:</strong> Dán các đoạn định nghĩa/ý chính, hệ thống tự tách thành tóm tắt và thẻ ghi nhớ.</p>
+                        </div>
+                    </details>
+
+                    <!-- Khung nhập văn bản -->
+                    <div class="mb-3">
+                        <textarea id="studyInput" rows="8" placeholder="Dán danh sách câu hỏi trắc nghiệm (Câu 1: ... A. ... B. ... Đáp án: A), cặp Hỏi - Đáp, hoặc đề cương bài học vào đây..." class="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm leading-relaxed resize-y transition"></textarea>
+                        <div class="flex items-center justify-between text-xs text-slate-400 mt-1.5 px-1">
+                            <span id="charCounter">0 ký tự</span>
+                            <button type="button" onclick="clearAllInput()" class="hover:text-red-500 font-medium transition flex items-center gap-1">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                <span>Xóa nội dung</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KHU VỰC TẢI TỆP LÊN TỐI ĐA 100KB (TƯƠNG THÍCH 100% CẢM ỨNG DI ĐỘNG) -->
+                    <div class="mb-4 space-y-2.5">
+                        <div id="dropZone" class="relative flex flex-col items-center justify-center gap-1.5 w-full py-4 px-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 bg-slate-50/80 dark:bg-slate-950/60 text-center transition overflow-hidden group">
+                            <!-- Input file phủ trực tiếp toàn bộ vùng chạm -->
+                            <input type="file" id="fileUploadInput" aria-label="Tải tệp câu hỏi hoặc đề cương (tối đa 100KB)" style="opacity: 0; position: absolute; inset: 0; width: 100%; height: 100%; z-index: 20; cursor: pointer;">
+                            
+                            <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition pointer-events-none">
+                                <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                            </div>
+                            <p class="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 pointer-events-none">
+                                Chạm để <span class="text-blue-600 dark:text-blue-400 underline">chọn tệp</span> hoặc kéo thả vào đây
+                            </p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 pointer-events-none">
+                                Hỗ trợ .txt, .docx, .md, .csv, .json, .html (Tối đa 100 KB)
+                            </p>
+                        </div>
+
+                        <!-- Thanh đo dung lượng thực tế (Max 100 KB) -->
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800">
+                            <div class="flex items-center justify-between gap-2 text-xs mb-1.5">
+                                <span id="fileStatusName" class="font-medium text-slate-600 dark:text-slate-300 truncate flex items-center gap-1.5">
+                                    <i data-lucide="file" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                                    <span class="truncate">Chưa chọn tệp</span>
+                                </span>
+                                <span id="capacityBadge" class="font-bold text-slate-700 dark:text-slate-200 flex-shrink-0">
+                                    0.0 KB / 100 KB
+                                </span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                <div id="capacityBar" class="h-full bg-blue-600 transition-all duration-300 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <div id="fileAlertBox" class="hidden mt-2 p-2.5 rounded-lg bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 text-xs text-red-600 dark:text-red-300 flex items-start gap-2">
+                                <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                                <span id="fileAlertMessage" class="leading-snug"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHỌN CHẾ ĐỘ XỬ LÝ: OFFLINE (ĐƯA CÂU HỎI LÊN) vs ONLINE (GEMINI AI) -->
+                    <div class="p-3.5 rounded-2xl bg-slate-100/80 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 mb-4">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chế độ xử lý</span>
+                            <span id="activeModePill" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                                Offline (Đưa câu hỏi lên)
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <!-- Nút Offline Smart Parser -->
+                            <button type="button" id="modeBtnOffline" onclick="selectMode('offline')" class="p-3 rounded-xl border-2 border-indigo-600 bg-white dark:bg-slate-900 text-left shadow-sm transition">
+                                <div class="flex items-center gap-1.5 font-bold text-xs sm:text-sm text-indigo-600 dark:text-indigo-400">
+                                    <i data-lucide="cpu" class="w-4 h-4 flex-shrink-0"></i>
+                                    <span>Offline (Sẵn có)</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+                                    Nhận diện câu hỏi trắc nghiệm, Hỏi-Đáp & đề cương 100% không cần mạng
+                                </p>
+                            </button>
+
+                            <!-- Nút Online Gemini AI -->
+                            <button type="button" id="modeBtnOnline" onclick="selectMode('online')" class="p-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-900 text-left transition">
+                                <div class="flex items-center gap-1.5 font-bold text-xs sm:text-sm text-slate-700 dark:text-slate-200">
+                                    <i data-lucide="sparkles" class="w-4 h-4 flex-shrink-0 text-blue-500"></i>
+                                    <span>Online AI</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+                                    Gemini AI tự động biên soạn câu hỏi mới & giải thích chi tiết
+                                </p>
+                            </button>
+                        </div>
+
+                        <!-- Ngăn kéo nhập Gemini API Key -->
+                        <div class="mt-2.5 pt-2.5 border-t border-slate-200/80 dark:border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span id="apiKeyStatusHint" class="text-[11px] text-slate-500 dark:text-slate-400">Chế độ Offline không cần API Key</span>
+                                <button type="button" onclick="toggleApiSettings()" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                    Cài đặt Gemini API Key
+                                </button>
+                            </div>
+                            <div id="apiKeyDrawer" class="hidden mt-2 space-y-1.5">
+                                <div class="flex gap-1.5">
+                                    <input type="password" id="customApiKeyInput" placeholder="Dán Gemini API Key (AIzaSy...)" class="flex-1 px-3 py-1.5 text-xs rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 outline-none focus:border-blue-500">
+                                    <button type="button" onclick="saveCustomApiKey()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition">Lưu</button>
+                                </div>
+                                <p class="text-[10px] text-slate-400">Key được lưu cục bộ trong localStorage trên trình duyệt của bạn.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nút hành động chính -->
+                    <button type="button" id="generateActionBtn" onclick="handleProcessContent()" class="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-md shadow-indigo-500/20 transition flex items-center justify-center gap-2">
+                        <i data-lucide="play-circle" class="w-5 h-5"></i>
+                        <span id="generateActionLabel">Phân Tích & Bắt Đầu Ôn Tập</span>
+                    </button>
+                </div>
+
+                <!-- Thanh trạng thái lưu tự động -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between text-xs shadow-sm">
+                    <span class="flex items-center gap-1.5 font-medium text-slate-600 dark:text-slate-300">
+                        <i data-lucide="hard-drive" class="w-4 h-4 text-emerald-500"></i>
+                        <span>Lưu tiến độ học tự động</span>
+                    </span>
+                    <span id="autoSaveTimestamp" class="text-slate-400">Sẵn sàng</span>
+                </div>
+            </section>
+
+            <!-- ================= CỘT PHẢI: KHÔNG GIAN HỌC TẬP 3 TAB (7 CỘT) ================= -->
+            <section class="lg:col-span-7 flex flex-col gap-4">
+
+                <!-- Thanh điều hướng 3 Tabs -->
+                <nav class="bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-3 gap-1.5">
+                    <button type="button" onclick="switchTab('quiz')" id="tab-quiz" class="tab-nav-btn py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm transition">
+                        <i data-lucide="check-square" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>Trắc Nghiệm</span>
+                        <span id="badgeQuizCount" class="px-1.5 py-0.2 rounded-full text-[11px] bg-white/20 text-white">0</span>
+                    </button>
+                    <button type="button" onclick="switchTab('flashcards')" id="tab-flashcards" class="tab-nav-btn py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <i data-lucide="layers" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>Flashcards</span>
+                        <span id="badgeFcCount" class="px-1.5 py-0.2 rounded-full text-[11px] bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300">0</span>
+                    </button>
+                    <button type="button" onclick="switchTab('summary')" id="tab-summary" class="tab-nav-btn py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <i data-lucide="book-open" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>Tổng Hợp</span>
+                    </button>
+                </nav>
+
+                <!-- Trạng thái Đang tải -->
+                <div id="loadingState" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-10 sm:p-14 text-center shadow-sm">
+                    <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+                    <h3 id="loadingHeading" class="font-bold text-base sm:text-lg text-slate-900 dark:text-white">Đang xử lý dữ liệu...</h3>
+                    <p id="loadingSubtext" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-md mx-auto">
+                        Đang phân tích cấu trúc câu hỏi, trích xuất đáp án và đồng bộ thẻ ghi nhớ.
+                    </p>
+                </div>
+
+                <!-- Trạng thái Chào mừng khi chưa có dữ liệu -->
+                <div id="welcomeEmptyState" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 sm:p-12 text-center shadow-sm">
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="brain-circuit" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">Sẵn sàng luyện tập thông minh</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-2 leading-relaxed">
+                        Dán danh sách câu hỏi sẵn có của bạn, tải tệp <strong class="text-slate-700 dark:text-slate-200">.txt / .docx</strong> lên (tối đa 100KB), hoặc nhấn <strong class="text-indigo-600 dark:text-indigo-400">"Mẫu Câu Hỏi Offline"</strong> để trải nghiệm ngay.
+                    </p>
+                </div>
+
+                <!-- KHU VỰC HIỂN THỊ KẾT QUẢ 3 TAB -->
+                <div id="studyWorkspace" class="hidden space-y-4">
+
+                    <!-- ========== TAB 1: TRẮC NGHIỆM TƯƠNG TÁC ========== -->
+                    <div id="panel-quiz" class="tab-panel space-y-4">
+                        <!-- Thanh điều khiển điểm số & công cụ luyện tập -->
+                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-extrabold text-sm border border-blue-200/70 dark:border-blue-800/70">
+                                    Đúng: <span id="scoreCorrect">0</span> / <span id="scoreTotal">0</span>
+                                </div>
+                                <span id="quizAnsweredStatus" class="text-xs font-medium text-slate-500 dark:text-slate-400">Đã làm 0 câu</span>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" onclick="shuffleQuizzes()" class="text-xs font-semibold px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800 transition flex items-center gap-1.5">
+                                    <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
+                                    <span>Xáo trộn câu hỏi</span>
+                                </button>
+                                <button type="button" id="retryWrongBtn" onclick="retryWrongQuizzes()" class="hidden text-xs font-semibold px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800 transition flex items-center gap-1.5">
+                                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                                    <span>Làm lại câu sai</span>
+                                </button>
+                                <button type="button" onclick="resetAllQuizzes()" class="text-xs font-semibold px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5">
+                                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                    <span>Làm lại tất cả</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách câu hỏi trắc nghiệm -->
+                        <div id="quizListContainer" class="space-y-4"></div>
+                    </div>
+
+                    <!-- ========== TAB 2: FLASHCARDS LẬT 3D ========== -->
+                    <div id="panel-flashcards" class="tab-panel hidden space-y-4">
+                        <!-- Thanh tiến độ & Bộ lọc thẻ -->
+                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                                <div class="flex items-center gap-3 font-semibold">
+                                    <span class="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                        Đã thuộc: <strong id="fcCountMastered">0</strong>
+                                    </span>
+                                    <span class="text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                                        <i data-lucide="clock" class="w-4 h-4"></i>
+                                        Cần ôn lại: <strong id="fcCountReview">0</strong>
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <button type="button" id="toggleReviewFilterBtn" onclick="toggleFlashcardFilter()" class="text-xs font-semibold px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-amber-400 transition">
+                                        Lọc thẻ cần ôn
+                                    </button>
+                                    <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
+                                        <span id="fcPositionCurrent">1</span> / <span id="fcPositionTotal">0</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                <div id="fcMasteryProgress" class="h-full bg-emerald-500 transition-all duration-300 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Thẻ Lật 3D -->
+                        <div class="perspective-1000 w-full h-72 sm:h-80 cursor-pointer select-none" onclick="flipCurrentFlashcard()">
+                            <div id="fcCardInner" class="relative w-full h-full transition-transform duration-500 transform-style-3d rounded-3xl shadow-md">
+                                
+                                <!-- MẶT TRƯỚC -->
+                                <div class="absolute inset-0 backface-hidden bg-white dark:bg-slate-900 border-2 border-blue-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center">
+                                    <span id="fcBadgeStatus" class="absolute top-4 right-4 text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">Thẻ mới</span>
+                                    <span class="text-[11px] uppercase tracking-widest font-bold text-blue-600 dark:text-blue-400 mb-3">Câu hỏi / Thuật ngữ</span>
+                                    <p id="fcFrontContent" class="text-base sm:text-xl font-bold text-slate-900 dark:text-white leading-snug max-w-lg overflow-y-auto max-h-44 px-2 whitespace-pre-line">
+                                        ...
+                                    </p>
+                                    <span class="absolute bottom-4 text-xs text-slate-400 flex items-center gap-1.5">
+                                        <i data-lucide="pointer" class="w-3.5 h-3.5"></i>
+                                        Chạm vào thẻ để lật xem đáp án
+                                    </span>
+                                </div>
+
+                                <!-- MẶT SAU -->
+                                <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center">
+                                    <span class="text-[11px] uppercase tracking-widest font-bold text-blue-200 mb-3">Đáp án / Giải thích</span>
+                                    <p id="fcBackContent" class="text-sm sm:text-lg font-medium leading-relaxed max-w-lg overflow-y-auto max-h-48 px-2 whitespace-pre-line">
+                                        ...
+                                    </p>
+                                    <span class="absolute bottom-4 text-xs text-blue-200/80">
+                                        Chạm lần nữa để quay lại mặt trước
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bộ nút điều hướng & đánh dấu Flashcard -->
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 w-full sm:w-auto justify-center">
+                                <button type="button" onclick="navigateFlashcard(-1)" aria-label="Thẻ trước" class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm transition">
+                                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                                </button>
+                                <button type="button" onclick="shuffleFlashcardDeck()" title="Xáo trộn thẻ" class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm transition">
+                                    <i data-lucide="shuffle" class="w-5 h-5"></i>
+                                </button>
+                                <button type="button" onclick="navigateFlashcard(1)" aria-label="Thẻ tiếp theo" class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm transition">
+                                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-2.5 w-full sm:w-auto">
+                                <button type="button" onclick="setFlashcardStatus('review')" class="flex-1 sm:flex-initial py-3 px-4 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/70 dark:hover:bg-amber-900/70 text-amber-800 dark:text-amber-300 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5">
+                                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                                    <span>Cần ôn lại</span>
+                                </button>
+                                <button type="button" onclick="setFlashcardStatus('mastered')" class="flex-1 sm:flex-initial py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition flex items-center justify-center gap-1.5">
+                                    <i data-lucide="check" class="w-4 h-4"></i>
+                                    <span>Đã thuộc</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== TAB 3: TỔNG HỢP & TỰ LUẬN ========== -->
+                    <div id="panel-summary" class="tab-panel hidden space-y-4">
+                        <!-- Khối Câu hỏi Tự luận & Hỏi-Đáp -->
+                        <div id="essayBlock" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+                            <div class="flex items-center justify-between gap-2 pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800">
+                                <h3 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                                    <i data-lucide="pen-tool" class="w-5 h-5 text-indigo-500"></i>
+                                    <span>Câu Hỏi Tự Luận & Hỏi – Đáp</span>
+                                </h3>
+                                <button type="button" onclick="toggleAllEssays()" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 transition">
+                                    Ẩn/Hiện tất cả đáp án
+                                </button>
+                            </div>
+                            <div id="essayListContainer" class="space-y-3.5"></div>
+                        </div>
+
+                        <!-- Khối Tóm tắt ý chính đề cương -->
+                        <div id="summaryBlock" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+                            <div class="flex items-center justify-between gap-2 pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800">
+                                <h3 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                                    <i data-lucide="bookmark-check" class="w-5 h-5 text-amber-500"></i>
+                                    <span>Tóm Tắt Kiến Thức Trọng Tâm</span>
+                                </h3>
+                                <button type="button" onclick="copySummaryText()" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                    <span>Sao chép</span>
+                                </button>
+                            </div>
+                            <ul id="summaryListContainer" class="space-y-3 text-sm sm:text-[15px] text-slate-700 dark:text-slate-200 leading-relaxed"></ul>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 px-4 text-center text-xs text-slate-400 dark:text-slate-500 border-t border-slate-200 dark:border-slate-800">
+        StudySmart • Nạp câu hỏi & đề cương Offline thông minh • Sáng tạo đề ôn tập Online với Gemini AI
+    </footer>
+
+    <!-- ================= JAVASCRIPT LOGIC HOÀN CHỈNH ================= -->
+    <script>
+        // =========================================================================
+        // 1. HẰNG SỐ & TRẠNG THÁI ỨNG DỤNG (STATE)
+        // =========================================================================
+        const STORAGE_DATA_KEY = 'studysmart_hybrid_state_v1';
+        const STORAGE_API_KEY = 'studysmart_gemini_api_key';
+        const STORAGE_THEME_KEY = 'studysmart_theme';
+        const MAX_BYTES = 100 * 1024; // 100 KB = 102,400 bytes
+        const SUPPORTED_EXTS = ['txt', 'md', 'csv', 'json', 'html', 'htm', 'docx'];
+
+        let state = {
+            mode: 'offline', // Mặc định ưu tiên Offline đưa câu hỏi/đề cương lên, tự chuyển Online nếu muốn AI tạo mới
+            activeTab: 'quiz',
+            rawText: '',
+            quizzes: [],     // { question, options: [], correctIndex: number | null, explanation, level, userAnswer: number | null }
+            flashcards: [],  // { id, front, back, status: 'new' | 'mastered' | 'review' }
+            essays: [],      // { question, guide }
+            summary: [],     // string[]
+            fcIndex: 0,
+            fcFlipped: false,
+            fcOnlyReview: false,
+            savedAt: null
+        };
+
+        // =========================================================================
+        // 2. KHỞI TẠO HỆ THỐNG
+        // =========================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshIcons();
+            initTheme();
+            initNetworkMonitor();
+            initFileUploadHandlers();
+            restoreApiKey();
+            restoreSavedWorkspace();
+
+            const studyInput = document.getElementById('studyInput');
+            studyInput.addEventListener('input', () => {
+                state.rawText = studyInput.value;
+                hideFileAlert();
+                updateCapacityMeter(getUtf8ByteLength(state.rawText), 'Văn bản nhập trực tiếp');
+            });
+        });
+
+        function refreshIcons() {
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        }
+
+        function getUtf8ByteLength(str) {
+            return new Blob([str || '']).size;
+        }
+
+        // =========================================================================
+        // 3. GIAO DIỆN SÁNG/TỐI, TRẠNG THÁI MẠNG & CHỌN CHẾ ĐỘ
+        // =========================================================================
+        function initTheme() {
+            const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+            applyTheme(isDark);
+        }
+
+        function toggleTheme() {
+            applyTheme(!document.documentElement.classList.contains('dark'));
+        }
+
+        function applyTheme(isDark) {
+            document.documentElement.classList.toggle('dark', isDark);
+            localStorage.setItem(STORAGE_THEME_KEY, isDark ? 'dark' : 'light');
+            document.getElementById('themeIconSun').classList.toggle('hidden', !isDark);
+            document.getElementById('themeIconMoon').classList.toggle('hidden', isDark);
+        }
+
+        function initNetworkMonitor() {
+            const updateNetworkUI = () => {
+                const online = navigator.onLine;
+                const badge = document.getElementById('networkBadge');
+                const dot = document.getElementById('networkDot');
+                const label = document.getElementById('networkLabel');
+
+                if (online) {
+                    badge.className = 'hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800';
+                    dot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+                    label.textContent = 'Online';
+                } else {
+                    badge.className = 'hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800';
+                    dot.className = 'w-2 h-2 rounded-full bg-amber-500';
+                    label.textContent = 'Offline';
+                    if (state.mode === 'online') {
+                        selectMode('offline');
+                        showToast('Mất kết nối Internet. Đã chuyển sang chế độ Offline Smart Parser!', 'warning');
+                    }
+                }
+            };
+
+            window.addEventListener('online', updateNetworkUI);
+            window.addEventListener('offline', updateNetworkUI);
+            updateNetworkUI();
+            selectMode('offline');
+        }
+
+        function selectMode(mode) {
+            state.mode = mode;
+            const btnOffline = document.getElementById('modeBtnOffline');
+            const btnOnline = document.getElementById('modeBtnOnline');
+            const pill = document.getElementById('activeModePill');
+            const actionLabel = document.getElementById('generateActionLabel');
+            const hint = document.getElementById('apiKeyStatusHint');
+
+            if (mode === 'offline') {
+                btnOffline.className = 'p-3 rounded-xl border-2 border-indigo-600 bg-white dark:bg-slate-900 text-left shadow-sm transition';
+                btnOnline.className = 'p-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-900 text-left transition';
+                pill.textContent = 'Offline (Đưa câu hỏi lên)';
+                pill.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300';
+                actionLabel.textContent = 'Phân Tích & Bắt Đầu Ôn Tập';
+                hint.textContent = 'Chế độ Offline chạy 100% không cần mạng';
+            } else {
+                btnOnline.className = 'p-3 rounded-xl border-2 border-blue-600 bg-white dark:bg-slate-900 text-left shadow-sm transition';
+                btnOffline.className = 'p-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-900 text-left transition';
+                pill.textContent = 'Online (Gemini AI)';
+                pill.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300';
+                actionLabel.textContent = 'Tạo Bộ Câu Hỏi Mới Với AI';
+                const hasKey = !!(localStorage.getItem(STORAGE_API_KEY) || '').trim();
+                hint.textContent = hasKey ? 'Đã sẵn sàng Gemini API Key' : 'Cần nhập Gemini API Key để gọi AI';
+            }
+        }
+
+        function toggleApiSettings() {
+            document.getElementById('apiKeyDrawer').classList.toggle('hidden');
+        }
+
+        function saveCustomApiKey() {
+            const val = document.getElementById('customApiKeyInput').value.trim();
+            localStorage.setItem(STORAGE_API_KEY, val);
+            selectMode(state.mode);
+            showToast(val ? 'Đã lưu Gemini API Key vào trình duyệt!' : 'Đã xóa Gemini API Key.', 'success');
+        }
+
+        function restoreApiKey() {
+            const saved = localStorage.getItem(STORAGE_API_KEY);
+            if (saved) {
+                document.getElementById('customApiKeyInput').value = saved;
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const colors = {
+                success: 'bg-emerald-600 text-white border-emerald-500',
+                error: 'bg-red-600 text-white border-red-500',
+                warning: 'bg-amber-600 text-white border-amber-500',
+                info: 'bg-slate-800 text-white border-slate-700'
+            };
+            const icons = {
+                success: 'check-circle',
+                error: 'x-circle',
+                warning: 'alert-triangle',
+                info: 'info'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-lg text-xs sm:text-sm font-medium transform transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+            toast.innerHTML = `
+                <i data-lucide="${icons[type] || 'info'}" class="w-4 h-4 flex-shrink-0"></i>
+                <span class="leading-snug">${escapeHTML(message)}</span>
+            `;
+            container.appendChild(toast);
+            refreshIcons();
+
+            requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // =========================================================================
+        // 4. HỆ THỐNG TẢI TỆP LÊN 100KB (TXT, DOCX, MD, CSV, JSON, HTML)
+        // =========================================================================
+        function initFileUploadHandlers() {
+            const fileInput = document.getElementById('fileUploadInput');
+            const dropZone = document.getElementById('dropZone');
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                handleFileSelection(file).finally(() => {
+                    fileInput.value = '';
+                });
+            });
+
+            ['dragenter', 'dragover'].forEach(evt => {
+                dropZone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.add('border-blue-500', 'bg-blue-50/70', 'dark:bg-blue-950/30');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(evt => {
+                dropZone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.remove('border-blue-500', 'bg-blue-50/70', 'dark:bg-blue-950/30');
+                });
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+                if (file) handleFileSelection(file);
+            });
+        }
+
+        function updateCapacityMeter(bytes, labelText, isError = false) {
+            const kb = (bytes / 1024).toFixed(1);
+            const percent = Math.min(100, (bytes / MAX_BYTES) * 100);
+            const charCount = document.getElementById('studyInput').value.length;
+
+            document.getElementById('charCounter').textContent = `${charCount.toLocaleString('vi-VN')} ký tự`;
+            document.getElementById('fileStatusName').innerHTML = `
+                <i data-lucide="file-check" class="w-3.5 h-3.5 ${isError ? 'text-red-500' : 'text-blue-500'} flex-shrink-0"></i>
+                <span class="truncate">${escapeHTML(labelText)}</span>
+            `;
+            document.getElementById('capacityBadge').textContent = `${kb} KB / 100 KB`;
+
+            const bar = document.getElementById('capacityBar');
+            bar.style.width = `${percent}%`;
+            if (isError || bytes > MAX_BYTES) {
+                bar.className = 'h-full bg-red-500 transition-all duration-300 rounded-full';
+                document.getElementById('capacityBadge').className = 'font-bold text-red-600 dark:text-red-400 flex-shrink-0';
+            } else if (percent > 80) {
+                bar.className = 'h-full bg-amber-500 transition-all duration-300 rounded-full';
+                document.getElementById('capacityBadge').className = 'font-bold text-amber-600 dark:text-amber-400 flex-shrink-0';
+            } else {
+                bar.className = 'h-full bg-blue-600 transition-all duration-300 rounded-full';
+                document.getElementById('capacityBadge').className = 'font-bold text-slate-700 dark:text-slate-200 flex-shrink-0';
+            }
+            refreshIcons();
+        }
+
+        function showFileAlert(msg) {
+            const box = document.getElementById('fileAlertBox');
+            document.getElementById('fileAlertMessage').textContent = msg;
+            box.classList.remove('hidden');
+            refreshIcons();
+        }
+
+        function hideFileAlert() {
+            document.getElementById('fileAlertBox').classList.add('hidden');
+        }
+
+        async function handleFileSelection(file) {
+            hideFileAlert();
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+
+            if (!SUPPORTED_EXTS.includes(ext)) {
+                updateCapacityMeter(file.size, file.name, true);
+                showFileAlert(`Định dạng ".${ext}" chưa được hỗ trợ. Vui lòng chọn tệp .txt, .docx, .md, .csv, .json hoặc .html.`);
+                return;
+            }
+
+            if (file.size > MAX_BYTES) {
+                const fileKB = (file.size / 1024).toFixed(1);
+                updateCapacityMeter(file.size, file.name, true);
+                showFileAlert(`Tệp "${file.name}" (${fileKB} KB) vượt quá giới hạn tối đa 100 KB. Vui lòng chia nhỏ tệp hoặc sao chép trực tiếp nội dung.`);
+                return;
+            }
+
+            updateCapacityMeter(file.size, `Đang đọc: ${file.name}...`);
+
+            try {
+                let extractedText = '';
+                if (['txt', 'md', 'csv', 'json', 'html', 'htm'].includes(ext)) {
+                    const raw = await readFileAsTextUTF8(file);
+                    if (ext === 'html' || ext === 'htm') {
+                        const doc = new DOMParser().parseFromString(raw, 'text/html');
+                        extractedText = (doc.body && doc.body.innerText) ? doc.body.innerText.trim() : raw;
+                    } else {
+                        extractedText = raw;
+                    }
+                } else if (ext === 'docx') {
+                    extractedText = await extractDocxTextOffline(file);
+                    if (!extractedText || extractedText.trim().length < 5) {
+                        updateCapacityMeter(file.size, file.name, true);
+                        showFileAlert('Không tìm thấy văn bản trong tệp .docx (tệp có thể chỉ chứa ảnh scan). Vui lòng sao chép văn bản và dán vào khung bên trên.');
+                        return;
+                    }
+                }
+
+                extractedText = extractedText.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+                const textBytes = getUtf8ByteLength(extractedText);
+
+                if (textBytes > MAX_BYTES) {
+                    updateCapacityMeter(textBytes, file.name, true);
+                    showFileAlert(`Nội dung văn bản trích xuất (${(textBytes / 1024).toFixed(1)} KB) vượt quá 100 KB. Vui lòng rút gọn bớt.`);
+                    return;
+                }
+
+                const inputArea = document.getElementById('studyInput');
+                inputArea.value = extractedText;
+                state.rawText = extractedText;
+                updateCapacityMeter(file.size, `${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+                showToast(`Đã tải lên thành công "${file.name}"!`, 'success');
+            } catch (err) {
+                console.error(err);
+                updateCapacityMeter(file.size, file.name, true);
+                showFileAlert('Lỗi khi đọc tệp. Vui lòng thử sao chép và dán nội dung trực tiếp.');
+            }
+        }
+
+        function readFileAsTextUTF8(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result || '');
+                reader.onerror = () => reject(new Error('Lỗi đọc tệp'));
+                reader.readAsText(file, 'UTF-8');
+            });
+        }
+
+        function readFileAsArrayBuffer(file) {
+            if (typeof file.arrayBuffer === 'function') return file.arrayBuffer();
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = () => reject(new Error('Lỗi đọc nhị phân'));
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // =========================================================================
+        // 5. BỘ GIẢI NÉN DOCX OFFLINE (ZIP CENTRAL DIRECTORY + INFLATE THUẦN JS)
+        // =========================================================================
+        async function extractDocxTextOffline(file) {
+            const buffer = await readFileAsArrayBuffer(file);
+            const bytes = new Uint8Array(buffer);
+            const view = new DataView(buffer);
+
+            let eocdOffset = -1;
+            const searchLimit = Math.max(0, bytes.length - 65557);
+            for (let i = bytes.length - 22; i >= searchLimit; i--) {
+                if (view.getUint32(i, true) === 0x06054b50) {
+                    eocdOffset = i;
+                    break;
+                }
+            }
+
+            const entries = [];
+            if (eocdOffset !== -1) {
+                const totalEntries = view.getUint16(eocdOffset + 10, true);
+                const cdOffset = view.getUint32(eocdOffset + 16, true);
+                let ptr = cdOffset;
+
+                for (let i = 0; i < totalEntries && ptr + 46 <= bytes.length; i++) {
+                    if (view.getUint32(ptr, true) !== 0x02014b50) break;
+                    const method = view.getUint16(ptr + 10, true);
+                    const compSize = view.getUint32(ptr + 20, true);
+                    const nameLen = view.getUint16(ptr + 28, true);
+                    const extraLen = view.getUint16(ptr + 30, true);
+                    const commentLen = view.getUint16(ptr + 32, true);
+                    const localHeaderOffset = view.getUint32(ptr + 42, true);
+
+                    const nameBytes = bytes.slice(ptr + 46, ptr + 46 + nameLen);
+                    const entryName = new TextDecoder('utf-8').decode(nameBytes);
+                    entries.push({ entryName, method, compSize, localHeaderOffset });
+                    ptr += 46 + nameLen + extraLen + commentLen;
+                }
+            }
+
+            const docEntries = entries
+                .filter(e => e.entryName === 'word/document.xml' || /^word\/(header|footer)\d+\.xml$/.test(e.entryName))
+                .sort((a, b) => (a.entryName === 'word/document.xml' ? -1 : 1));
+
+            const textSegments = [];
+            for (const entry of docEntries) {
+                const lh = entry.localHeaderOffset;
+                if (lh + 30 > bytes.length || view.getUint32(lh, true) !== 0x04034b50) continue;
+
+                const lhNameLen = view.getUint16(lh + 26, true);
+                const lhExtraLen = view.getUint16(lh + 28, true);
+                const dataStart = lh + 30 + lhNameLen + lhExtraLen;
+                const dataEnd = dataStart + entry.compSize;
+                if (dataEnd > bytes.length) continue;
+
+                const compressedSlice = bytes.slice(dataStart, dataEnd);
+                let xmlString = '';
+                if (entry.method === 0) {
+                    xmlString = new TextDecoder('utf-8').decode(compressedSlice);
+                } else if (entry.method === 8) {
+                    const inflated = await inflateRawData(compressedSlice);
+                    xmlString = new TextDecoder('utf-8').decode(inflated);
+                }
+
+                if (xmlString) {
+                    const parsed = parseWordDocumentXml(xmlString);
+                    if (parsed) textSegments.push(parsed);
+                }
+            }
+            return textSegments.join('\n\n').trim();
+        }
+
+        async function inflateRawData(compressedBytes) {
+            if (typeof DecompressionStream !== 'undefined') {
+                try {
+                    const ds = new DecompressionStream('deflate-raw');
+                    const ab = await new Response(new Blob([compressedBytes]).stream().pipeThrough(ds)).arrayBuffer();
+                    return new Uint8Array(ab);
+                } catch (e) {
+                    // Fallback sang bộ giải nén thuần JS
+                }
+            }
+            return pureJsInflateRaw(compressedBytes);
+        }
+
+        function pureJsInflateRaw(src) {
+            let pos = 0, bitBuf = 0, bitCnt = 0;
+            const out = [];
+
+            function readBits(n) {
+                while (bitCnt < n) {
+                    if (pos >= src.length) return 0;
+                    bitBuf |= src[pos++] << bitCnt;
+                    bitCnt += 8;
+                }
+                const val = bitBuf & ((1 << n) - 1);
+                bitBuf >>>= n;
+                bitCnt -= n;
+                return val;
+            }
+
+            function buildHuffman(lengths) {
+                const maxLen = Math.max(...lengths, 1);
+                const count = new Uint16Array(maxLen + 1);
+                for (let i = 0; i < lengths.length; i++) if (lengths[i] > 0) count[lengths[i]]++;
+                const nextCode = new Uint16Array(maxLen + 1);
+                let code = 0;
+                for (let bits = 1; bits <= maxLen; bits++) {
+                    code = (code + count[bits - 1]) << 1;
+                    nextCode[bits] = code;
+                }
+                const table = new Map();
+                for (let sym = 0; sym < lengths.length; sym++) {
+                    const len = lengths[sym];
+                    if (len > 0) {
+                        let c = nextCode[len]++;
+                        let rev = 0;
+                        for (let b = 0; b < len; b++) {
+                            rev = (rev << 1) | (c & 1);
+                            c >>>= 1;
+                        }
+                        table.set((len << 16) | rev, sym);
+                    }
+                }
+                return { table, maxLen };
+            }
+
+            function decodeSym(huff) {
+                let code = 0;
+                for (let len = 1; len <= huff.maxLen; len++) {
+                    code |= readBits(1) << (len - 1);
+                    const sym = huff.table.get((len << 16) | code);
+                    if (sym !== undefined) return sym;
+                }
+                throw new Error('Lỗi giải mã Huffman');
+            }
+
+            const lenBase = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
+            const lenExtra = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+            const distBase = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
+            const distExtra = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+            const clOrder = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+
+            let bfinal = 0;
+            while (!bfinal) {
+                bfinal = readBits(1);
+                const btype = readBits(2);
+                if (btype === 0) {
+                    bitBuf = 0; bitCnt = 0;
+                    const len = src[pos] | (src[pos + 1] << 8);
+                    pos += 4;
+                    for (let i = 0; i < len && pos < src.length; i++) out.push(src[pos++]);
+                } else if (btype === 1 || btype === 2) {
+                    let litHuff, distHuff;
+                    if (btype === 1) {
+                        const litLens = new Uint8Array(288);
+                        for (let i = 0; i <= 143; i++) litLens[i] = 8;
+                        for (let i = 144; i <= 255; i++) litLens[i] = 9;
+                        for (let i = 256; i <= 279; i++) litLens[i] = 7;
+                        for (let i = 280; i <= 287; i++) litLens[i] = 8;
+                        litHuff = buildHuffman(litLens);
+                        distHuff = buildHuffman(new Uint8Array(32).fill(5));
+                    } else {
+                        const hlit = readBits(5) + 257;
+                        const hdist = readBits(5) + 1;
+                        const hclen = readBits(4) + 4;
+                        const clLens = new Uint8Array(19);
+                        for (let i = 0; i < hclen; i++) clLens[clOrder[i]] = readBits(3);
+                        const clHuff = buildHuffman(clLens);
+                        const allLens = new Uint8Array(hlit + hdist);
+                        let idx = 0;
+                        while (idx < allLens.length) {
+                            const sym = decodeSym(clHuff);
+                            if (sym < 16) allLens[idx++] = sym;
+                            else if (sym === 16) {
+                                const rep = readBits(2) + 3, prev = allLens[idx - 1];
+                                for (let r = 0; r < rep; r++) allLens[idx++] = prev;
+                            } else if (sym === 17) {
+                                const rep = readBits(3) + 3;
+                                for (let r = 0; r < rep; r++) allLens[idx++] = 0;
+                            } else {
+                                const rep = readBits(7) + 11;
+                                for (let r = 0; r < rep; r++) allLens[idx++] = 0;
+                            }
+                        }
+                        litHuff = buildHuffman(allLens.slice(0, hlit));
+                        distHuff = buildHuffman(allLens.slice(hlit));
+                    }
+
+                    while (true) {
+                        const sym = decodeSym(litHuff);
+                        if (sym < 256) out.push(sym);
+                        else if (sym === 256) break;
+                        else {
+                            const li = sym - 257;
+                            const length = lenBase[li] + readBits(lenExtra[li]);
+                            const di = decodeSym(distHuff);
+                            const dist = distBase[di] + readBits(distExtra[di]);
+                            for (let k = 0; k < length; k++) out.push(out[out.length - dist]);
+                        }
+                    }
+                } else {
+                    throw new Error('Block ZIP không hợp lệ');
+                }
+            }
+            return new Uint8Array(out);
+        }
+
+        // Bảo toàn định dạng dấu sao (*A.) hoặc gạch chân/in đậm (<u>, <b>) trong Word nếu người dùng đánh dấu đáp án đúng
+        function parseWordDocumentXml(xmlString) {
+            const xmlDoc = new DOMParser().parseFromString(xmlString, 'text/xml');
+            const paragraphs = xmlDoc.getElementsByTagNameNS('*', 'p');
+            const lines = [];
+
+            for (let i = 0; i < paragraphs.length; i++) {
+                const p = paragraphs[i];
+                let line = '';
+                const runs = p.getElementsByTagNameNS('*', 'r');
+                if (runs.length > 0) {
+                    for (let r = 0; r < runs.length; r++) {
+                        const run = runs[r];
+                        const rPr = run.getElementsByTagNameNS('*', 'rPr')[0];
+                        const hasUnderline = rPr && rPr.getElementsByTagNameNS('*', 'u').length > 0 &&
+                            rPr.getElementsByTagNameNS('*', 'u')[0].getAttribute('w:val') !== 'none';
+
+                        let runText = '';
+                        const walker = xmlDoc.createTreeWalker(run, NodeFilter.SHOW_ELEMENT, null);
+                        let el = walker.nextNode();
+                        while (el) {
+                            if (el.localName === 't') runText += el.textContent || '';
+                            else if (el.localName === 'tab') runText += ' ';
+                            else if (el.localName === 'br' || el.localName === 'cr') runText += '\n';
+                            el = walker.nextNode();
+                        }
+                        // Nếu trong file Word đáp án A/B/C/D được gạch chân để đánh dấu đáp án đúng, tự động gắn dấu *
+                        if (hasUnderline && /^\s*[A-Da-d]\s*[.):]/.test(runText)) {
+                            runText = '*' + runText.trimStart();
+                        }
+                        line += runText;
+                    }
+                } else {
+                    line = p.textContent || '';
+                }
+
+                const cleanLine = line.replace(/[ \t]+/g, ' ').trim();
+                if (cleanLine) lines.push(cleanLine);
+            }
+            return lines.join('\n');
+        }
+
+        // =========================================================================
+        // 6. ĐIỀU PHỐI XỬ LÝ (OFFLINE SMART PARSER vs ONLINE GEMINI AI)
+        // =========================================================================
+        async function handleProcessContent() {
+            const text = document.getElementById('studyInput').value.trim();
+            const byteSize = getUtf8ByteLength(text);
+
+            if (byteSize > MAX_BYTES) {
+                showToast(`Nội dung vượt quá 100 KB (${(byteSize / 1024).toFixed(1)} KB). Vui lòng rút gọn bớt!`, 'error');
+                return;
+            }
+            if (text.length < 15) {
+                showToast('Vui lòng nhập nội dung câu hỏi hoặc đề cương (ít nhất 15 ký tự).', 'warning');
+                return;
+            }
+
+            state.rawText = text;
+            const btn = document.getElementById('generateActionBtn');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('welcomeEmptyState');
+            const workspace = document.getElementById('studyWorkspace');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-60', 'cursor-not-allowed');
+            empty.classList.add('hidden');
+            workspace.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            try {
+                if (state.mode === 'online') {
+                    if (!navigator.onLine) {
+                        throw new Error('Thiết bị đang ngoại tuyến');
+                    }
+                    document.getElementById('loadingHeading').textContent = 'Gemini AI đang biên soạn bộ đề mới...';
+                    document.getElementById('loadingSubtext').textContent = 'AI đang phân tích đề cương để sáng tạo câu hỏi trắc nghiệm 4 đáp án, giải thích chi tiết và thẻ ghi nhớ.';
+                    await generateOnlineWithGemini(text);
+                } else {
+                    document.getElementById('loadingHeading').textContent = 'Smart Parser đang nhận diện dữ liệu Offline...';
+                    document.getElementById('loadingSubtext').textContent = 'Đang tách câu hỏi trắc nghiệm, đáp án, cặp Hỏi – Đáp và kiến thức trọng tâm.';
+                    await new Promise(r => setTimeout(r, 200));
+                    parseOfflineSmartContent(text);
+                }
+
+                state.savedAt = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date().toLocaleDateString('vi-VN');
+                persistWorkspace();
+
+                // Tự động chọn tab phù hợp nhất với dữ liệu vừa nhận diện
+                if (state.quizzes.length > 0) switchTab('quiz');
+                else if (state.flashcards.length > 0) switchTab('flashcards');
+                else switchTab('summary');
+
+                renderWorkspace();
+
+                const statsMsg = `Nhận diện: ${state.quizzes.length} trắc nghiệm, ${state.flashcards.length} flashcards, ${state.essays.length} tự luận.`;
+                showToast(statsMsg, 'success');
+
+            } catch (error) {
+                console.warn('Lỗi Online AI, chuyển sang Offline Smart Parser:', error);
+                showToast('Không thể kết nối Gemini AI (kiểm tra mạng hoặc API Key). Đang xử lý bằng chế độ Offline!', 'warning');
+                parseOfflineSmartContent(text);
+                state.savedAt = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date().toLocaleDateString('vi-VN');
+                persistWorkspace();
+                renderWorkspace();
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60', 'cursor-not-allowed');
+                loading.classList.add('hidden');
+                workspace.classList.remove('hidden');
+            }
+        }
+
+        // =========================================================================
+        // 7. CHẾ ĐỘ OFFLINE: SMART PARSER NHẬN DIỆN CÂU HỎI SẴN CÓ & ĐỀ CƯƠNG
+        // =========================================================================
+        function parseOfflineSmartContent(rawText) {
+            const normalized = rawText.replace(/\r\n/g, '\n').trim();
+            const lines = normalized.split('\n');
+
+            const parsedQuizzes = [];
+            const parsedEssays = [];
+            const parsedFlashcards = [];
+            const leftoverOutlineLines = [];
+
+            // --- PHA 1: NHẬN DIỆN KHỐI CÂU HỎI TRẮC NGHIỆM (A, B, C, D) ---
+            // Gom văn bản thành từng khối dựa theo tiền tố "Câu 1:", "Bài 1:", "1.", "Question 1:" hoặc khối có chứa các lựa chọn A. B. C. D.
+            const questionBlocks = splitIntoQuestionBlocks(lines);
+            const consumedLineIndices = new Set();
+
+            for (const block of questionBlocks) {
+                const mcq = tryParseMultipleChoiceBlock(block.lines);
+                if (mcq) {
+                    parsedQuizzes.push(mcq);
+                    // Tạo thêm Flashcard tương ứng nếu câu trắc nghiệm đã có đáp án đúng
+                    if (mcq.correctIndex !== null && mcq.options[mcq.correctIndex]) {
+                        parsedFlashcards.push({
+                            id: parsedFlashcards.length + 1,
+                            front: mcq.question,
+                            back: `Đáp án đúng: ${['A', 'B', 'C', 'D'][mcq.correctIndex]}. ${mcq.options[mcq.correctIndex]}${mcq.explanation ? '\n\nGiải thích: ' + mcq.explanation : ''}`,
+                            status: 'new'
+                        });
+                    }
+                    block.lineIndices.forEach(idx => consumedLineIndices.add(idx));
+                }
+            }
+
+            // --- PHA 2: NHẬN DIỆN CẶP HỎI - ĐÁP TỰ LUẬN & THUẬT NGỮ - ĐỊNH NGHĨA ---
+            const remainingLines = lines.filter((_, idx) => !consumedLineIndices.has(idx));
+            let i = 0;
+            while (i < remainingLines.length) {
+                const line = remainingLines[i].trim();
+                if (!line) {
+                    i++;
+                    continue;
+                }
+
+                // Mẫu 1: "Hỏi: ..." hoặc "Câu hỏi: ..." hoặc "Câu 1: ..." (không có A/B/C/D) đi kèm dòng "Đáp: ..." / "Trả lời: ..." / "Đáp án: ..."
+                const qPrefixMatch = line.match(/^(?:Câu\s*hỏi|Hỏi|Câu\s*\d+|Bài\s*\d+|Q\d+)\s*[:.)]\s*(.+)$/i);
+                if (qPrefixMatch) {
+                    const qText = qPrefixMatch[1].trim();
+                    let answerLines = [];
+                    let j = i + 1;
+
+                    while (j < remainingLines.length) {
+                        const nextL = remainingLines[j].trim();
+                        if (!nextL) {
+                            if (answerLines.length > 0) break;
+                            j++;
+                            continue;
+                        }
+                        // Nếu gặp câu hỏi mới thì dừng gom đáp án
+                        if (/^(?:Câu\s*hỏi|Hỏi|Câu\s*\d+|Bài\s*\d+|Q\d+)\s*[:.)]/i.test(nextL)) break;
+
+                        const ansPrefix = nextL.match(/^(?:Đáp\s*án|Trả\s*lời|Đáp|Lời\s*giải|Hướng\s*dẫn|A)\s*[:.)]\s*(.+)$/i);
+                        if (ansPrefix) {
+                            answerLines.push(ansPrefix[1].trim());
+                        } else if (answerLines.length > 0) {
+                            answerLines.push(nextL);
+                        } else {
+                            break;
+                        }
+                        j++;
+                    }
+
+                    if (answerLines.length > 0) {
+                        const fullAns = answerLines.join('\n').trim();
+                        parsedEssays.push({ question: qText, guide: fullAns });
+                        parsedFlashcards.push({
+                            id: parsedFlashcards.length + 1,
+                            front: qText,
+                            back: fullAns,
+                            status: 'new'
+                        });
+                        i = j;
+                        continue;
+                    }
+                }
+
+                // Mẫu 2: Dòng có dạng "Thuật ngữ: Định nghĩa" hoặc "Khái niệm là định nghĩa..."
+                const termColonMatch = line.match(/^[-•*+]?\s*([^:]{3,65}):\s+(.{12,})$/);
+                if (termColonMatch && !/^https?$/i.test(termColonMatch[1])) {
+                    const term = termColonMatch[1].trim();
+                    const def = termColonMatch[2].trim();
+                    parsedFlashcards.push({
+                        id: parsedFlashcards.length + 1,
+                        front: term,
+                        back: def,
+                        status: 'new'
+                    });
+                    parsedEssays.push({
+                        question: `Trình bày nội dung / khái niệm về "${term}".`,
+                        guide: def
+                    });
+                    leftoverOutlineLines.push(`${term}: ${def}`);
+                    i++;
+                    continue;
+                }
+
+                const defSentenceMatch = line.match(/^[-•*+]?\s*([^,.;:]{3,65}?)\s+(là|được gọi là|được định nghĩa là|gồm|bao gồm)\s+(.{12,})$/i);
+                if (defSentenceMatch) {
+                    const subject = defSentenceMatch[1].trim();
+                    const cleanLine = line.replace(/^[-•*+]\s*/, '').trim();
+                    parsedFlashcards.push({
+                        id: parsedFlashcards.length + 1,
+                        front: `${subject} là gì / gồm những gì?`,
+                        back: cleanLine,
+                        status: 'new'
+                    });
+                    leftoverOutlineLines.push(cleanLine);
+                    i++;
+                    continue;
+                }
+
+                leftoverOutlineLines.push(line.replace(/^[-•*+]\s*/, '').trim());
+                i++;
+            }
+
+            // --- PHA 3: TẠO TÓM TẮT TỪ ĐỀ CƯƠNG VĂN BẢN THUẦN ---
+            const meaningfulOutline = leftoverOutlineLines
+                .filter(l => l.length >= 20 && !/^(?:CHƯƠNG|PHẦN|BÀI|MỤC|ĐỀ CƯƠNG)\s+[IVX0-9]+/i.test(l));
+
+            let finalSummary = [];
+            if (meaningfulOutline.length > 0) {
+                finalSummary = meaningfulOutline.slice(0, 8);
+                // Nếu chưa có Flashcards nào từ câu hỏi sẵn có, tạo Flashcards từ các ý đề cương
+                if (parsedFlashcards.length === 0) {
+                    finalSummary.forEach(sentence => {
+                        const words = sentence.split(/\s+/);
+                        const cue = words.slice(0, Math.min(6, Math.ceil(words.length * 0.45))).join(' ') + '...';
+                        parsedFlashcards.push({
+                            id: parsedFlashcards.length + 1,
+                            front: `Hoàn thiện ý trọng tâm:\n"${cue}"`,
+                            back: sentence,
+                            status: 'new'
+                        });
+                    });
+                }
+            } else if (parsedQuizzes.length > 0 || parsedEssays.length > 0) {
+                // Nếu toàn bộ dữ liệu đưa lên là ngân hàng câu hỏi, tự động tổng hợp điểm kiến thức từ các câu hỏi & đáp án
+                parsedQuizzes.slice(0, 5).forEach(q => {
+                    if (q.correctIndex !== null && q.options[q.correctIndex]) {
+                        finalSummary.push(`${q.question} → ${q.options[q.correctIndex]}`);
+                    }
+                });
+                parsedEssays.slice(0, 4).forEach(e => {
+                    finalSummary.push(`${e.question} → ${e.guide}`);
+                });
+            }
+
+            state.quizzes = parsedQuizzes;
+            state.flashcards = parsedFlashcards;
+            state.essays = parsedEssays;
+            state.summary = finalSummary;
+            state.fcIndex = 0;
+            state.fcFlipped = false;
+            state.fcOnlyReview = false;
+        }
+
+        // Chia văn bản thành các khối ứng viên cho câu hỏi trắc nghiệm
+        function splitIntoQuestionBlocks(lines) {
+            const blocks = [];
+            let current = null;
+
+            const qHeaderRegex = /^(?:Câu\s*\d+|Bài\s*\d+|Question\s*\d+|\d+\s*[.)])\s*(.*)$/i;
+
+            for (let idx = 0; idx < lines.length; idx++) {
+                const rawLine = lines[idx];
+                const trimmed = rawLine.trim();
+
+                if (!trimmed) {
+                    if (current && current.hasOptions) {
+                        blocks.push(current);
+                        current = null;
+                    }
+                    continue;
+                }
+
+                const isNewHeader = qHeaderRegex.test(trimmed);
+                const hasOptionMarker = /(?:^|\s)\*?[A-Da-d]\s*[.):]\s+/.test(trimmed);
+
+                if (isNewHeader) {
+                    if (current) blocks.push(current);
+                    current = { lines: [trimmed], lineIndices: [idx], hasOptions: hasOptionMarker };
+                } else if (current) {
+                    current.lines.push(trimmed);
+                    current.lineIndices.push(idx);
+                    if (hasOptionMarker) current.hasOptions = true;
+                } else if (idx > 0 && hasOptionMarker && lines[idx - 1].trim()) {
+                    // Trường hợp câu hỏi không có tiền tố "Câu 1:" nhưng ngay dòng dưới có A. B. C. D.
+                    current = {
+                        lines: [lines[idx - 1].trim(), trimmed],
+                        lineIndices: [idx - 1, idx],
+                        hasOptions: true
+                    };
+                }
+            }
+
+            if (current) blocks.push(current);
+            return blocks;
+        }
+
+        // Phân tích chi tiết 1 khối trắc nghiệm: hỗ trợ cả A/B/C/D trên nhiều dòng lẫn trên cùng 1 dòng
+        function tryParseMultipleChoiceBlock(blockLines) {
+            const fullBlock = blockLines.join('\n');
+
+            // Tách dòng Đáp án & Giải thích ở cuối khối (nếu có)
+            let explicitAnswerLetter = null;
+            let explanationText = '';
+            const contentLines = [];
+
+            for (const line of blockLines) {
+                const ansLineMatch = line.match(/^(?:Đáp\s*án(?:\s*đúng)?|ĐA|Answer|Key)\s*[:.\-]\s*\*?([A-Da-d])\b(?:\s*[.):\-]?\s*(.*))?$/i);
+                if (ansLineMatch) {
+                    explicitAnswerLetter = ansLineMatch[1].toUpperCase();
+                    if (ansLineMatch[2] && ansLineMatch[2].trim()) {
+                        explanationText = ansLineMatch[2].trim();
+                    }
+                    continue;
+                }
+
+                const expLineMatch = line.match(/^(?:Giải\s*thích|Hướng\s*dẫn|Ghi\s*chú|Note)\s*[:.\-]\s*(.+)$/i);
+                if (expLineMatch) {
+                    explanationText = expLineMatch[1].trim();
+                    continue;
+                }
+
+                contentLines.push(line);
+            }
+
+            const joinedContent = contentLines.join('\n');
+
+            // Tìm vị trí bắt đầu của các phương án *A. / A. / A) / A:
+            const optionRegex = /(?:^|[\n\s])(\*?)([A-Da-d])\s*[.):]\s+/g;
+            const matches = [];
+            let m;
+            while ((m = optionRegex.exec(joinedContent)) !== null) {
+                const letter = m[2].toUpperCase();
+                // Đảm bảo thứ tự hợp lý A -> B -> C -> D
+                if (matches.length === 0 && letter === 'A') {
+                    matches.push({ index: m.index, fullMatchLen: m[0].length, starred: m[1] === '*', letter });
+                } else if (matches.length > 0) {
+                    const expectedNext = String.fromCharCode(65 + matches.length);
+                    if (letter === expectedNext) {
+                        matches.push({ index: m.index, fullMatchLen: m[0].length, starred: m[1] === '*', letter });
+                    }
+                }
+                if (matches.length === 4) break;
+            }
+
+            // Yêu cầu ít nhất 2 phương án (thường là 4 phương án A, B, C, D)
+            if (matches.length < 2) return null;
+
+            // Trích xuất nội dung câu hỏi (bỏ tiền tố "Câu 1:", "1.", "Bài 1:")
+            let questionText = joinedContent.slice(0, matches[0].index)
+                .replace(/^(?:Câu\s*\d+|Bài\s*\d+|Question\s*\d+|\d+\s*[.)])\s*[:.\-]?\s*/i, '')
+                .trim();
+
+            if (!questionText) return null;
+
+            const options = [];
+            let starredIndex = null;
+
+            for (let i = 0; i < matches.length; i++) {
+                const start = matches[i].index + matches[i].fullMatchLen;
+                const end = i + 1 < matches.length ? matches[i + 1].index : joinedContent.length;
+                let optText = joinedContent.slice(start, end).replace(/\s+/g, ' ').trim();
+
+                // Kiểm tra dấu * ở cuối phương án (ví dụ: "B. Hà Nội*")
+                if (/\*$/.test(optText)) {
+                    optText = optText.replace(/\*+$/, '').trim();
+                    starredIndex = i;
+                }
+                if (matches[i].starred) {
+                    starredIndex = i;
+                }
+                options.push(optText);
+            }
+
+            let correctIndex = null;
+            if (explicitAnswerLetter) {
+                const idx = explicitAnswerLetter.charCodeAt(0) - 65;
+                if (idx >= 0 && idx < options.length) correctIndex = idx;
+            } else if (starredIndex !== null) {
+                correctIndex = starredIndex;
+            }
+
+            return {
+                question: questionText,
+                options,
+                correctIndex, // Có thể là null nếu bộ câu hỏi đưa lên chưa đánh dấu đáp án sẵn
+                explanation: explanationText,
+                level: correctIndex !== null ? 'Có đáp án' : 'Tự luyện',
+                userAnswer: null
+            };
+        }
+
+        // Cho phép người dùng tự chọn/lưu đáp án đúng cho câu hỏi chưa có đáp án sẵn
+        function setManualCorrectAnswer(qIdx, optIdx) {
+            state.quizzes[qIdx].correctIndex = optIdx;
+            state.quizzes[qIdx].level = 'Đã lưu đáp án';
+            state.quizzes[qIdx].userAnswer = optIdx;
+            persistWorkspace();
+            renderQuizPanel();
+            showToast(`Đã lưu đáp án đúng là ${['A', 'B', 'C', 'D'][optIdx]}!`, 'success');
+        }
+
+        // =========================================================================
+        // 8. CHẾ ĐỘ ONLINE: GEMINI AI TỰ ĐỘNG BIÊN SOẠN BỘ CÂU HỎI MỚI
+        // =========================================================================
+        async function generateOnlineWithGemini(text) {
+            const customKey = (localStorage.getItem(STORAGE_API_KEY) || document.getElementById('customApiKeyInput').value || '').trim();
+            const apiKey = customKey || "";
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemInstruction = `Bạn là chuyên gia sư phạm Việt Nam. Hãy phân tích đề cương hoặc bài tập người dùng cung cấp để tạo bộ ôn tập dễ hiểu, chính xác và bám sát kiến thức gốc.
+Trả về JSON theo đúng schema:
+- quizzes: 6-10 câu trắc nghiệm 4 phương án (A, B, C, D), ghi rõ level ("Nhận biết" | "Thông hiểu" | "Vận dụng"), options (mảng 4 chuỗi không kèm chữ cái A/B/C/D), correctIndex (0-3), explanation (giải thích dễ hiểu).
+- flashcards: 6-10 thẻ ghi nhớ 2 mặt (front: khái niệm/câu hỏi, back: định nghĩa/đáp án ngắn gọn).
+- essays: 2-4 câu tự luận gợi mở tư duy kèm hướng dẫn trả lời chi tiết (question, guide).
+- summary: 4-7 gạch đầu dòng tóm tắt kiến thức cốt lõi nhất.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: `Biên soạn bộ câu hỏi ôn tập từ nội dung sau:\n\n${text}` }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            quizzes: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        level: { type: "STRING" },
+                                        question: { type: "STRING" },
+                                        options: { type: "ARRAY", items: { type: "STRING" } },
+                                        correctIndex: { type: "INTEGER" },
+                                        explanation: { type: "STRING" }
+                                    },
+                                    required: ["level", "question", "options", "correctIndex", "explanation"]
+                                }
+                            },
+                            flashcards: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        front: { type: "STRING" },
+                                        back: { type: "STRING" }
+                                    },
+                                    required: ["front", "back"]
+                                }
+                            },
+                            essays: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        question: { type: "STRING" },
+                                        guide: { type: "STRING" }
+                                    },
+                                    required: ["question", "guide"]
+                                }
+                            },
+                            summary: { type: "ARRAY", items: { type: "STRING" } }
+                        },
+                        required: ["quizzes", "flashcards", "essays", "summary"]
+                    }
+                }
+            };
+
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!rawJson) throw new Error('Phản hồi AI trống');
+
+            const parsed = JSON.parse(rawJson);
+            state.quizzes = (parsed.quizzes || []).map(q => ({ ...q, userAnswer: null }));
+            state.flashcards = (parsed.flashcards || []).map((f, i) => ({ id: i + 1, front: f.front, back: f.back, status: 'new' }));
+            state.essays = parsed.essays || [];
+            state.summary = parsed.summary || [];
+            state.fcIndex = 0;
+            state.fcFlipped = false;
+            state.fcOnlyReview = false;
+        }
+
+        // =========================================================================
+        // 9. HIỂN THỊ KẾT QUẢ & TƯƠNG TÁC HỌC TẬP (3 TABS)
+        // =========================================================================
+        function renderWorkspace() {
+            const hasAny = state.quizzes.length > 0 || state.flashcards.length > 0 || state.essays.length > 0 || state.summary.length > 0;
+            if (!hasAny) return;
+
+            document.getElementById('welcomeEmptyState').classList.add('hidden');
+            document.getElementById('studyWorkspace').classList.remove('hidden');
+
+            renderQuizPanel();
+            renderFlashcardPanel();
+            renderSummaryPanel();
+            refreshIcons();
+        }
+
+        function switchTab(tabName) {
+            state.activeTab = tabName;
+            ['quiz', 'flashcards', 'summary'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const panel = document.getElementById(`panel-${t}`);
+                const active = t === tabName;
+
+                panel.classList.toggle('hidden', !active);
+                if (active) {
+                    btn.className = 'tab-nav-btn py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm transition';
+                } else {
+                    btn.className = 'tab-nav-btn py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition';
+                }
+            });
+            refreshIcons();
+        }
+
+        // --- TAB 1: TRẮC NGHIỆM TƯƠNG TÁC ---
+        function renderQuizPanel() {
+            const container = document.getElementById('quizListContainer');
+            const total = state.quizzes.length;
+            document.getElementById('badgeQuizCount').textContent = total;
+            document.getElementById('scoreTotal').textContent = total;
+
+            let correctCount = 0;
+            let answeredCount = 0;
+            let wrongCount = 0;
+
+            state.quizzes.forEach(q => {
+                if (q.userAnswer !== null) {
+                    answeredCount++;
+                    if (q.correctIndex !== null) {
+                        if (q.userAnswer === q.correctIndex) correctCount++;
+                        else wrongCount++;
+                    }
+                }
+            });
+
+            document.getElementById('scoreCorrect').textContent = correctCount;
+            document.getElementById('quizAnsweredStatus').textContent = `Đã làm ${answeredCount}/${total} câu`;
+            document.getElementById('retryWrongBtn').classList.toggle('hidden', wrongCount === 0);
+
+            if (total === 0) {
+                container.innerHTML = `<div class="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm text-slate-500">Không có câu hỏi trắc nghiệm trong nội dung này. Hãy chuyển sang tab <strong>Flashcards</strong> hoặc <strong>Tổng Hợp</strong> để học bài!</div>`;
+                return;
+            }
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+
+            container.innerHTML = state.quizzes.map((q, qIdx) => {
+                const answered = q.userAnswer !== null;
+                const hasKey = q.correctIndex !== null;
+
+                const optionsMarkup = q.options.map((opt, optIdx) => {
+                    let cardStyle = 'border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 bg-slate-50/70 dark:bg-slate-950/60';
+                    let badgeStyle = 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700';
+                    let rightIcon = '';
+
+                    if (answered) {
+                        if (hasKey) {
+                            if (optIdx === q.correctIndex) {
+                                cardStyle = 'border-emerald-500 bg-emerald-50/90 dark:bg-emerald-950/50 text-emerald-950 dark:text-emerald-200 font-semibold';
+                                badgeStyle = 'bg-emerald-600 text-white border-emerald-600';
+                                rightIcon = '<i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 ml-auto flex-shrink-0"></i>';
+                            } else if (optIdx === q.userAnswer) {
+                                cardStyle = 'border-red-500 bg-red-50/90 dark:bg-red-950/50 text-red-950 dark:text-red-200';
+                                badgeStyle = 'bg-red-600 text-white border-red-600';
+                                rightIcon = '<i data-lucide="x-circle" class="w-5 h-5 text-red-600 ml-auto flex-shrink-0"></i>';
+                            } else {
+                                cardStyle = 'border-slate-200/60 dark:border-slate-800/60 opacity-55';
+                            }
+                        } else {
+                            // Trường hợp câu hỏi đưa lên chưa ghi đáp án sẵn
+                            if (optIdx === q.userAnswer) {
+                                cardStyle = 'border-blue-500 bg-blue-50/90 dark:bg-blue-950/50 text-blue-950 dark:text-blue-200 font-semibold';
+                                badgeStyle = 'bg-blue-600 text-white border-blue-600';
+                                rightIcon = `<button type="button" onclick="event.stopPropagation(); setManualCorrectAnswer(${qIdx}, ${optIdx})" class="ml-auto text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">Lưu làm đáp án đúng</button>`;
+                            }
+                        }
+                    }
+
+                    return `
+                        <div onclick="chooseQuizOption(${qIdx}, ${optIdx})" role="button" tabindex="0" class="w-full text-left p-3.5 rounded-xl border-2 transition flex items-center gap-3 cursor-pointer ${cardStyle}">
+                            <span class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold flex-shrink-0 ${badgeStyle}">
+                                ${optionLabels[optIdx] || optIdx + 1}
+                            </span>
+                            <span class="text-sm sm:text-[15px] leading-snug flex-1">${escapeHTML(opt)}</span>
+                            ${rightIcon}
+                        </div>
+                    `;
+                }).join('');
+
+                const explainBlock = (answered && (q.explanation || !hasKey)) ? `
+                    <div class="mt-4 p-3.5 rounded-xl bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 text-xs sm:text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2.5">
+                        <i data-lucide="lightbulb" class="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5"></i>
+                        <div class="leading-relaxed">
+                            ${q.explanation ? `<strong class="text-blue-700 dark:text-blue-300">Giải thích:</strong> ${escapeHTML(q.explanation)}` : 'Câu hỏi này chưa có đáp án trong tệp gốc. Bạn có thể bấm <strong>"Lưu làm đáp án đúng"</strong> để ghi nhớ cho các lần ôn sau.'}
+                        </div>
+                    </div>
+                ` : '';
+
+                return `
+                    <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-sm">
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold">Câu ${qIdx + 1}</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${hasKey ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'}">
+                                ${escapeHTML(q.level || (hasKey ? 'Có đáp án' : 'Chưa có đáp án'))}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white whitespace-pre-line leading-relaxed mb-4">
+                            ${escapeHTML(q.question)}
+                        </h4>
+                        <div class="space-y-2.5">
+                            ${optionsMarkup}
+                        </div>
+                        ${explainBlock}
+                    </article>
+                `;
+            }).join('');
+
+            refreshIcons();
+        }
+
+        function chooseQuizOption(qIdx, optIdx) {
+            const q = state.quizzes[qIdx];
+            if (q.userAnswer !== null && q.correctIndex !== null) return;
+            q.userAnswer = optIdx;
+            persistWorkspace();
+            renderQuizPanel();
+        }
+
+        function shuffleQuizzes() {
+            if (state.quizzes.length <= 1) return;
+            state.quizzes.sort(() => Math.random() - 0.5);
+            persistWorkspace();
+            renderQuizPanel();
+            showToast('Đã xáo trộn thứ tự các câu hỏi trắc nghiệm!', 'info');
+        }
+
+        function retryWrongQuizzes() {
+            let count = 0;
+            state.quizzes.forEach(q => {
+                if (q.userAnswer !== null && q.correctIndex !== null && q.userAnswer !== q.correctIndex) {
+                    q.userAnswer = null;
+                    count++;
+                }
+            });
+            if (count > 0) {
+                persistWorkspace();
+                renderQuizPanel();
+                showToast(`Đã đặt lại ${count} câu trả lời sai để bạn luyện lại!`, 'info');
+            }
+        }
+
+        function resetAllQuizzes() {
+            state.quizzes.forEach(q => q.userAnswer = null);
+            persistWorkspace();
+            renderQuizPanel();
+            showToast('Đã làm mới toàn bộ bài trắc nghiệm!', 'info');
+        }
+
+        // --- TAB 2: FLASHCARDS LẬT 3D ---
+        function getVisibleFlashcards() {
+            if (!state.fcOnlyReview) return state.flashcards;
+            const filtered = state.flashcards.filter(f => f.status === 'review');
+            return filtered.length > 0 ? filtered : state.flashcards;
+        }
+
+        function renderFlashcardPanel() {
+            const totalAll = state.flashcards.length;
+            const mastered = state.flashcards.filter(f => f.status === 'mastered').length;
+            const review = state.flashcards.filter(f => f.status === 'review').length;
+
+            document.getElementById('badgeFcCount').textContent = totalAll;
+            document.getElementById('fcCountMastered').textContent = mastered;
+            document.getElementById('fcCountReview').textContent = review;
+
+            const pct = totalAll > 0 ? Math.round((mastered / totalAll) * 100) : 0;
+            document.getElementById('fcMasteryProgress').style.width = `${pct}%`;
+
+            const filterBtn = document.getElementById('toggleReviewFilterBtn');
+            if (state.fcOnlyReview && review > 0) {
+                filterBtn.className = 'text-xs font-bold px-2.5 py-1 rounded-lg border border-amber-500 bg-amber-500 text-white transition';
+                filterBtn.textContent = `Đang lọc (${review})`;
+            } else {
+                state.fcOnlyReview = false;
+                filterBtn.className = 'text-xs font-semibold px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-amber-400 transition';
+                filterBtn.textContent = 'Lọc thẻ cần ôn';
+            }
+
+            const deck = getVisibleFlashcards();
+            document.getElementById('fcPositionTotal').textContent = deck.length;
+
+            if (deck.length === 0) {
+                document.getElementById('fcPositionCurrent').textContent = 0;
+                document.getElementById('fcFrontContent').textContent = 'Chưa có thẻ ghi nhớ.';
+                document.getElementById('fcBackContent').textContent = 'Hãy đưa câu hỏi hoặc đề cương lên để tạo thẻ.';
+                return;
+            }
+
+            if (state.fcIndex >= deck.length) state.fcIndex = 0;
+            const card = deck[state.fcIndex];
+
+            document.getElementById('fcPositionCurrent').textContent = state.fcIndex + 1;
+            document.getElementById('fcFrontContent').textContent = card.front;
+            document.getElementById('fcBackContent').textContent = card.back;
+            document.getElementById('fcCardInner').classList.toggle('rotate-y-180', state.fcFlipped);
+
+            const statusBadge = document.getElementById('fcBadgeStatus');
+            if (card.status === 'mastered') {
+                statusBadge.textContent = 'Đã thuộc';
+                statusBadge.className = 'absolute top-4 right-4 text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300';
+            } else if (card.status === 'review') {
+                statusBadge.textContent = 'Cần ôn lại';
+                statusBadge.className = 'absolute top-4 right-4 text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300';
+            } else {
+                statusBadge.textContent = 'Thẻ mới';
+                statusBadge.className = 'absolute top-4 right-4 text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500';
+            }
+        }
+
+        function flipCurrentFlashcard() {
+            if (getVisibleFlashcards().length === 0) return;
+            state.fcFlipped = !state.fcFlipped;
+            document.getElementById('fcCardInner').classList.toggle('rotate-y-180', state.fcFlipped);
+        }
+
+        function navigateFlashcard(step) {
+            const deck = getVisibleFlashcards();
+            if (deck.length === 0) return;
+            state.fcFlipped = false;
+            state.fcIndex = (state.fcIndex + step + deck.length) % deck.length;
+            renderFlashcardPanel();
+        }
+
+        function shuffleFlashcardDeck() {
+            if (state.flashcards.length <= 1) return;
+            state.flashcards.sort(() => Math.random() - 0.5);
+            state.fcIndex = 0;
+            state.fcFlipped = false;
+            renderFlashcardPanel();
+            showToast('Đã xáo trộn bộ thẻ Flashcards!', 'info');
+        }
+
+        function toggleFlashcardFilter() {
+            const reviewCount = state.flashcards.filter(f => f.status === 'review').length;
+            if (!state.fcOnlyReview && reviewCount === 0) {
+                showToast('Chưa có thẻ nào được đánh dấu "Cần ôn lại".', 'info');
+                return;
+            }
+            state.fcOnlyReview = !state.fcOnlyReview;
+            state.fcIndex = 0;
+            state.fcFlipped = false;
+            renderFlashcardPanel();
+        }
+
+        function setFlashcardStatus(newStatus) {
+            const deck = getVisibleFlashcards();
+            if (deck.length === 0) return;
+            const currentCard = deck[state.fcIndex];
+            const target = state.flashcards.find(f => f.id === currentCard.id);
+            if (target) target.status = newStatus;
+
+            persistWorkspace();
+            state.fcFlipped = false;
+            const updatedDeck = getVisibleFlashcards();
+            state.fcIndex = updatedDeck.length > 0 ? (state.fcIndex + 1) % updatedDeck.length : 0;
+            renderFlashcardPanel();
+        }
+
+        // --- TAB 3: TỔNG HỢP & TỰ LUẬN ---
+        function renderSummaryPanel() {
+            const essayBlock = document.getElementById('essayBlock');
+            const essayContainer = document.getElementById('essayListContainer');
+
+            if (state.essays && state.essays.length > 0) {
+                essayBlock.classList.remove('hidden');
+                essayContainer.innerHTML = state.essays.map((item, idx) => `
+                    <div class="p-4 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/25 border border-indigo-100 dark:border-indigo-900/50">
+                        <p class="font-bold text-sm sm:text-base text-slate-900 dark:text-white mb-2.5">
+                            Câu ${idx + 1}: ${escapeHTML(item.question)}
+                        </p>
+                        <details class="essay-detail group">
+                            <summary class="inline-flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline select-none">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                <span>Xem đáp án / gợi ý trả lời</span>
+                            </summary>
+                            <div class="mt-2.5 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-slate-800 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                                ${escapeHTML(item.guide)}
+                            </div>
+                        </details>
+                    </div>
+                `).join('');
+            } else {
+                essayBlock.classList.add('hidden');
+            }
+
+            const summaryBlock = document.getElementById('summaryBlock');
+            const listEl = document.getElementById('summaryListContainer');
+            if (state.summary && state.summary.length > 0) {
+                summaryBlock.classList.remove('hidden');
+                listEl.innerHTML = state.summary.map((point, i) => `
+                    <li class="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-100 dark:border-slate-800">
+                        <span class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                            ${i + 1}
+                        </span>
+                        <span class="flex-1">${escapeHTML(point)}</span>
+                    </li>
+                `).join('');
+            } else {
+                summaryBlock.classList.add('hidden');
+            }
+        }
+
+        function toggleAllEssays() {
+            const details = document.querySelectorAll('.essay-detail');
+            if (!details.length) return;
+            const anyClosed = Array.from(details).some(d => !d.open);
+            details.forEach(d => d.open = anyClosed);
+        }
+
+        function copySummaryText() {
+            if (!state.summary.length) return;
+            const formatted = state.summary.map((s, i) => `${i + 1}. ${s}`).join('\n');
+            const temp = document.createElement('textarea');
+            temp.value = formatted;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast('Đã sao chép nội dung tóm tắt!', 'success');
+        }
+
+        // =========================================================================
+        // 10. LƯU TRỮ LOCALSTORAGE, DỮ LIỆU MẪU & TẢI APP OFFLINE
+        // =========================================================================
+        function persistWorkspace() {
+            try {
+                localStorage.setItem(STORAGE_DATA_KEY, JSON.stringify(state));
+                document.getElementById('autoSaveTimestamp').textContent = `Đã lưu: ${state.savedAt || 'Vừa xong'}`;
+            } catch (e) {
+                console.warn('LocalStorage error:', e);
+            }
+        }
+
+        function restoreSavedWorkspace() {
+            try {
+                const raw = localStorage.getItem(STORAGE_DATA_KEY);
+                if (!raw) return;
+                const saved = JSON.parse(raw);
+                state = { ...state, ...saved };
+                if (state.rawText) {
+                    document.getElementById('studyInput').value = state.rawText;
+                    updateCapacityMeter(getUtf8ByteLength(state.rawText), 'Dữ liệu đã lưu trên máy');
+                }
+                if (state.savedAt) {
+                    document.getElementById('autoSaveTimestamp').textContent = `Đã lưu: ${state.savedAt}`;
+                }
+                if (state.activeTab) switchTab(state.activeTab);
+                renderWorkspace();
+            } catch (e) {
+                console.warn('Không thể khôi phục phiên học cũ:', e);
+            }
+        }
+
+        function clearAllInput() {
+            document.getElementById('studyInput').value = '';
+            state.rawText = '';
+            hideFileAlert();
+            updateCapacityMeter(0, 'Chưa chọn tệp');
+        }
+
+        // Mẫu 1: Bộ câu hỏi sẵn có (Trắc nghiệm + Hỏi-Đáp) cho chế độ Offline
+        function loadOfflineSampleData() {
+            const sampleQuestions = `Câu 1: Bào quan nào ở thực vật thực hiện chức năng quang hợp?
+A. Ti thể
+*B. Lục lạp
+C. Ribôxôm
+D. Bộ máy Gôngi
+Giải thích: Lục lạp chứa hệ sắc tố diệp lục hấp thụ năng lượng ánh sáng để tổng hợp chất hữu cơ.
+
+Câu 2: Sản phẩm của pha sáng trong quá trình quang hợp gồm những chất nào?
+A. Glucozo, O2 và H2O
+B. CO2, ATP và NADPH
+C. Tinh bột, O2 và ATP
+D. ATP, NADPH và O2
+Đáp án: D
+Giải thích: Pha sáng diễn ra tại màng tilacoit tạo ra ATP, NADPH cung cấp cho pha tối và giải phóng khí O2.
+
+Câu 3: Nhiệt độ tối ưu cho quá trình quang hợp ở đa số thực vật vùng nhiệt đới nằm trong khoảng nào?
+A. 5 – 15°C
+B. 15 – 20°C
+*C. 25 – 35°C
+D. 45 – 55°C
+
+Hỏi: Trình bày khái niệm quang hợp ở thực vật.
+Đáp: Quang hợp ở thực vật là quá trình lục lạp hấp thụ và sử dụng năng lượng ánh sáng để tổng hợp chất hữu cơ (glucozo) từ các chất vô cơ là CO2 và nước (H2O), đồng thời giải phóng khí O2.
+
+Hỏi: Phân biệt nơi diễn ra của pha sáng và pha tối trong quang hợp.
+Đáp: Pha sáng diễn ra tại màng tilacoit (cần ánh sáng trực tiếp), còn pha tối (chu trình Calvin) diễn ra trong chất nền stroma của lục lạp.`;
+
+            const input = document.getElementById('studyInput');
+            input.value = sampleQuestions;
+            state.rawText = sampleQuestions;
+            selectMode('offline');
+            hideFileAlert();
+            updateCapacityMeter(getUtf8ByteLength(sampleQuestions), 'Bo_Cau_Hoi_On_Tap_Mau.txt');
+            showToast('Đã chèn bộ câu hỏi mẫu! Bấm "Phân Tích & Bắt Đầu Ôn Tập" để luyện ngay.', 'info');
+        }
+
+        // Mẫu 2: Đề cương văn bản thuần cho Online AI hoặc tách ý Offline
+        function loadOutlineSampleData() {
+            const sampleOutline = `ĐỀ CƯƠNG LỊCH SỬ VIỆT NAM HIỆN ĐẠI
+
+1. Chiến dịch Điện Biên Phủ (1954):
+- Thời gian diễn ra từ ngày 13/3/1954 đến ngày 7/5/1954 qua 3 đợt tiến công.
+- Ý nghĩa lịch sử: Giáng đòn quyết định vào ý chí xâm lược của thực dân Pháp, làm xoay chuyển cục diện chiến tranh, tạo cơ sở thuận lợi cho việc ký kết Hiệp định Giơ-ne-vơ về chấm dứt chiến tranh, lập lại hòa bình ở Đông Dương.
+
+2. Hiệp định Giơ-ne-vơ (21/7/1954):
+- Công nhận các quyền dân tộc cơ bản của nhân dân ba nước Đông Dương là độc lập, chủ quyền, thống nhất và toàn vẹn lãnh thổ.
+- Lấy vĩ tuyến 17 (dọc sông Bến Hải, tỉnh Quảng Trị) làm giới tuyến quân sự tạm thời.`;
+
+            const input = document.getElementById('studyInput');
+            input.value = sampleOutline;
+            state.rawText = sampleOutline;
+            hideFileAlert();
+            updateCapacityMeter(getUtf8ByteLength(sampleOutline), 'De_Cuong_Lich_Su.txt');
+            showToast('Đã nạp đề cương mẫu! Bạn có thể chọn Offline hoặc Online AI để tạo câu hỏi.', 'info');
+        }
+
+        function downloadOfflineApp() {
+            const fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'StudySmart_OnTap_Offline.html';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast('Đã tải tệp StudySmart_OnTap_Offline.html về máy!', 'success');
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>
